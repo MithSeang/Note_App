@@ -83,25 +83,26 @@ class SignUpScreen extends StatelessWidget {
             SizedBox(
               height: 16,
             ),
-            Container(
-                alignment: Alignment.center,
-                margin: EdgeInsets.all(18),
-                height: height * 0.06,
-                width: width,
-                decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.circular(20)),
-                child: GestureDetector(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        controller.signUp(
-                          emailController.text.trim(),
-                          nameController.text.trim(),
-                          pwController.text.trim(),
-                        );
-                      }
-                    },
-                    child: Text("Sign Up"))),
+            GestureDetector(
+              onTap: () {
+                if (_formKey.currentState!.validate()) {
+                  controller.signUp(
+                    emailController.text.trim(),
+                    nameController.text.trim(),
+                    pwController.text.trim(),
+                  );
+                }
+              },
+              child: Container(
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.all(18),
+                  height: height * 0.06,
+                  width: width,
+                  decoration: BoxDecoration(
+                      color: Colors.blueAccent,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Text("Sign Up")),
+            ),
           ],
         ),
       ),

@@ -71,22 +71,22 @@ class LoginScreen extends StatelessWidget {
             SizedBox(
               height: 16,
             ),
-            Container(
-                alignment: Alignment.center,
-                margin: EdgeInsets.all(18),
-                height: height * 0.06,
-                width: width,
-                decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.circular(20)),
-                child: GestureDetector(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        controller.login(
-                            emailController.text, pwController.text);
-                      }
-                    },
-                    child: Text("Login"))),
+            GestureDetector(
+              onTap: () {
+                if (_formKey.currentState!.validate()) {
+                  controller.login(emailController.text, pwController.text);
+                }
+              },
+              child: Container(
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.all(18),
+                  height: height * 0.06,
+                  width: width,
+                  decoration: BoxDecoration(
+                      color: Colors.blueAccent,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Text("Login")),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:note_app/controller/auth_controller.dart';
 import 'package:note_app/controller/theme_controller.dart';
+import 'package:note_app/view/setting_screen/language_screen/language_screen.dart';
+import 'package:note_app/view/setting_screen/profile/profile_screen.dart';
 
 class Setting_Screen extends StatelessWidget {
   Setting_Screen({super.key});
   final themeController = Get.put(ThemeController());
   final authController = Get.find<AuthController>();
-
   final lstTile = [
     {'label': 'Profile', 'Icon': Icons.person},
     {'label': 'Language', 'Icon': Icons.translate},
   ];
+
+  final _pages = [Profile_Screen(), Language_Screen()];
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +81,7 @@ class Setting_Screen extends StatelessWidget {
                           final items = lstTile[index];
                           return GestureDetector(
                             onTap: () {
+                              Get.to(() => _pages[index]);
                               print('tap $index');
                             },
                             child: ListTile(

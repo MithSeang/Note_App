@@ -89,12 +89,11 @@ class AuthController extends GetxController {
     String name,
     String password,
   ) async {
-    isLoading.value = true;
-    print('isLoading is true');
     try {
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
-
+      isLoading.value = true;
+      print("isLoading is true");
       //get the information user
       User? user = userCredential.user;
 
