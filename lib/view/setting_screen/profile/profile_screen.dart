@@ -7,7 +7,7 @@ import 'package:note_app/model/user_model.dart';
 class Profile_Screen extends StatelessWidget {
   Profile_Screen({super.key});
 
-  UserModel? userss;
+  // UserModel? userss;
   final AuthController authController = Get.put(AuthController());
   final ProfileController profileController = Get.put(ProfileController());
 

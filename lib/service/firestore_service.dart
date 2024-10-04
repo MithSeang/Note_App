@@ -5,8 +5,16 @@ import 'package:note_app/model/add_model.dart';
 class FireStore_Service {
   final db = FirebaseFirestore.instance;
 
-  void AddNotes(Add_Model note, String uid) async {
-    await db.collection('users').doc(uid).collection('notes').add(note.toMap());
+  Future<void> AddNotes(Add_Model note, String uid) async {
+    try {
+      await db
+          .collection('users')
+          .doc(uid)
+          .collection('notes')
+          .add(note.toMap());
+    } catch (e) {
+      print("Error:$e");
+    }
   }
 
   Stream<List<Add_Model>> getNote(String uid) {
@@ -21,8 +29,8 @@ class FireStore_Service {
             .toList());
   }
 
-  void UpdateNote(Add_Model note, String uid) async {
-    var update = await db
+  Future<void> UpdateNote(Add_Model note, String uid) async {
+    await db
         .collection('users')
         .doc(uid)
         .collection('notes')
@@ -30,12 +38,7 @@ class FireStore_Service {
         .update(note.toMap());
   }
 
-  void Delete(String id, String uid) async {
-    var delete = await db
-        .collection('users')
-        .doc(uid)
-        .collection('notes')
-        .doc(id)
-        .delete();
+  Future<void> Delete(String id, String uid) async {
+    await db.collection('users').doc(uid).collection('notes').doc(id).delete();
   }
 }

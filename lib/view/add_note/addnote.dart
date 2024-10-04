@@ -39,9 +39,9 @@ class AddNote extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: TextField(
                 controller: desController,
-                maxLines: 5,
+                maxLines: null,
                 minLines: 1,
-                maxLength: 255,
+                // maxLength: 255,
                 decoration: InputDecoration(label: Text('Description'))),
           ),
           SizedBox(
@@ -57,6 +57,7 @@ class AddNote extends StatelessWidget {
                   noteController.addNote(
                     note,
                   );
+                  print('Added Note');
                 } else {
                   Add_Model updatenote = Add_Model(
                       id: note!.id,
@@ -64,8 +65,9 @@ class AddNote extends StatelessWidget {
                       description: desController.text,
                       createAt: DateTime.now());
                   noteController.updateNote(updatenote);
+                  print('Updated Note');
                 }
-                print('Added Note');
+
                 Get.back();
                 titleController.clear();
                 desController.clear();

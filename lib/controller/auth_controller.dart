@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:note_app/controller/note_controller.dart';
 import 'package:note_app/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -10,39 +11,75 @@ class AuthController extends GetxController {
   late Rx<User?> _user = Rx<User?>(_auth.currentUser);
   var isLoading = false.obs;
 
+  //loading data
   loadingData() async {
     isLoading.value = true;
     await Future.delayed(Duration(seconds: 3));
     isLoading.value = false;
   }
 
+  //getter current user
   Rx<User?> get user => _user;
+
   Rx<UserModel?> firestoreUser = Rx<UserModel?>(null);
 
   @override
   void onReady() {
     _user.bindStream(_auth.authStateChanges());
-    ever(_user, initScreen);
+    ever(_user, _handleUserStateChange);
     super.onReady();
   }
 
-  //handle user login or not
-  void initScreen(User? user) {
+  //new
+  void _handleUserStateChange(User? user) async {
     if (user == null) {
-      Get.offAllNamed('/Login');
+      await _handleLogout();
     } else {
-      isLoading.value = true;
-      // print("Login: isLoading set to true");
-
-      // Fetch user(name) data from Firestore because firebase auth have problem null
-      try {
-        fetchFirestoreName(user.uid);
-        Get.offAllNamed('/');
-      } finally {
-        isLoading.value = false;
-      }
+      await _handleLogin(user);
     }
   }
+
+  //new
+  Future<void> _handleLogout() async {
+    Get.offAllNamed('/Login');
+    firestoreUser.value = null;
+    Get.find<NoteController>().clearNotes();
+  }
+
+  //new
+  Future<void> _handleLogin(User user) async {
+    isLoading.value = true;
+    try {
+      await fetchFirestoreName(user.uid);
+      await Get.find<NoteController>().fetchNote(user.uid);
+      Get.offAllNamed('/');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  //handle user login or not old
+  // Future<void> initScreen(User? user) async {
+  //   if (user == null) {
+  //     Get.offAllNamed('/Login');
+  //     firestoreUser.value = null;
+  //     Get.find<NoteController>().clearNotes();
+  //   } else {
+  //     isLoading.value = true;
+  //     // print("Login: isLoading set to true");
+
+  //     // Fetch user(name) data from Firestore because firebase auth have problem null
+  //     try {
+  //       await fetchFirestoreName(user.uid); //fetch user name
+
+  //       Get.find<NoteController>().fetchNote(user.uid); // fetch note by user
+
+  //       Get.offAllNamed('/');
+  //     } finally {
+  //       isLoading.value = false;
+  //     }
+  //   }
+  // }
 
   Future<void> fetchFirestoreName(String uid) async {
     print("Fetching Firestore name...");
@@ -72,15 +109,19 @@ class AuthController extends GetxController {
       isLoading.value = true;
       print("Login: isLoading set to true");
 
-      await _auth
-          .signInWithEmailAndPassword(email: email, password: password)
-          .then((value) => loadingData());
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      // .then((value) => loadingData());
+      await loadingData();
     } catch (e) {
       if (e is FirebaseAuthException) {
         Get.snackbar('Error', "${e.message}");
       }
     } finally {
       isLoading.value = false;
+      // if (_user.value != null) {
+      //   await fetchFirestoreName(_user.value!.uid);
+      //   Get.find<NoteController>().fetchNote(_user.value!.uid); // Refresh notes
+      // }
     }
   }
 
@@ -90,9 +131,10 @@ class AuthController extends GetxController {
     String password,
   ) async {
     try {
+      isLoading.value = true;
+
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
-      isLoading.value = true;
       print("isLoading is true");
       //get the information user
       User? user = userCredential.user;
@@ -103,9 +145,13 @@ class AuthController extends GetxController {
         await firestore
             .collection('users')
             .doc(user.uid)
-            .set(users.UserToMap())
-            .then((value) => loadingData());
+            .set(users.UserToMap());
+        // .then((value) => loadingData());
         print('isLoading is false');
+        firestoreUser.value = users;
+        // await loadingData();
+        // Get.find<NoteController>().fetchNote(user.uid);
+        //Get.offAllNamed('/');
       }
 
       // store user information to firestore
@@ -120,7 +166,6 @@ class AuthController extends GetxController {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-      Get.offAllNamed('/Login');
     } catch (e) {}
   }
 }
