@@ -1,6 +1,9 @@
 # note_app
 
-A new Flutter project.
+This project I created noteapp for CRUD operation with firebase.
+Feature:
+   - Auth Login and Register
+   - CRUD with user login
 
 ## Getting Started
 
